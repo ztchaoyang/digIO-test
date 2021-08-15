@@ -1,9 +1,11 @@
 const formidable = require('formidable');
 const fs = require('fs')
 const Alpine = require('alpine');
+const { resolve } = require('path');
 const alpine = new Alpine();
 
 exports.parse = async function parse(req, res) {
+
     const form = formidable({ multiples: true });
     let ipAddresses = [];
     let visitedUrls = [];
@@ -24,10 +26,10 @@ exports.parse = async function parse(req, res) {
         }
 
     });
-    return setTimeout(function () { res.send({ uniqueIpCount: filter(ipAddresses).length, top3VisitedUrls: findMostFrequent(visitedUrls), top3ActiveUrls: findMostFrequent(ipAddresses) })}, 1000);
+    return setTimeout(function () { res.send({ uniqueIpCount: findUniqueElements(ipAddresses).length, top3VisitedUrls: find3MostFrequent(visitedUrls), top3ActiveUrls: find3MostFrequent(ipAddresses) })}, 1000);
 };
 
-function findMostFrequent (arr) {
+function find3MostFrequent (arr) {
     const map = {};
     arr.forEach(url => {
        if(map.hasOwnProperty(url)){
@@ -41,7 +43,7 @@ function findMostFrequent (arr) {
     return frequencyArr.slice(0, 3).map(el => el[0]);
  };
 
-function filter(arr) {
+function findUniqueElements(arr) {
     let result1 = [];
     arr.map(el => {
         if (!result1.includes(el)) {
